@@ -1,5 +1,12 @@
 # Project7 Predict Password Strength Natural Language Processing
-20. [Enlaces ](#schema20)
+1. [Importar librerías y cargar datos](#schema1)
+2. [Comprobar los nulos](#schema2)
+3. [Tenerlos datos en una tupla](#schema3)
+4. [Crear una función personalizada para dividir la entrada en caracteres de la lista](#schema4)
+5. [Importar vectorizador TF-IDF para convertir datos de cadena en datos numéricos](#schema5)
+6. [Aplicar LogisticRegression](#schema6)
+7. [Documentación](#schema7)
+
 
 <hr>
 
@@ -80,7 +87,7 @@ word_divide_char('kzde5577')
 
 <a name="schema5"></a>
 
-# 5. importar vectorizador TF-IDF para convertir datos de cadena en datos numéricos
+# 5. Importar vectorizador TF-IDF para convertir datos de cadena en datos numéricos
 
 ~~~python
 vectorizer=TfidfVectorizer(tokenizer=word_divide_char)
@@ -102,3 +109,71 @@ df=pd.DataFrame(first_document_vector.T.todense(),index=vectorizer.get_feature_n
 df.sort_values(by=['TF-IDF'],ascending=False)
 ~~~
 ![img](./images/002.png)
+
+
+
+<hr>
+
+<a name="schema6"></a>
+
+# 6. Aplicar LogisticRegression
+dividir datos en entrenar y probar
+
+     entrenar ---> Para aprender la relación dentro de los datos,
+
+     prueba -> Para hacer predicciones, y estos datos de prueba no serán vistos 
+
+     para mi modelo
+
+
+~~~python
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test=train_test_split(X,y,test_size=0.2)
+clf=LogisticRegression(random_state=0,solver='liblinear')
+clf.fit(X_train,y_train)
+~~~
+### Hacer la predicción
+~~~python
+dt=np.array(['%@123abcd'])
+pred=vectorizer.transform(dt)
+clf.predict(pred)
+array([2])
+~~~
+####  Comprobar la precisión usando confusion_matrix,accuracy_score
+~~~python
+from sklearn.metrics import confusion_matrix,accuracy_score
+cm=confusion_matrix(y_test,y_pred)
+print(cm)
+print(accuracy_score(y_test,y_pred))
+[[ 3476 14561    30]
+ [ 2234 94783  2221]
+ [   70  5948 10605]]
+0.8128546681799176
+~~~
+####  Crear un reporte para el modelo 
+~~~python
+from sklearn.metrics import classification_report
+print(classification_report(y_test,y_pred))
+              precision    recall  f1-score   support
+
+           0       0.60      0.19      0.29     18067
+           1       0.82      0.96      0.88     99238
+           2       0.82      0.64      0.72     16623
+
+    accuracy                           0.81    133928
+   macro avg       0.75      0.60      0.63    133928
+weighted avg       0.79      0.81      0.78    133928
+~~~
+
+
+
+
+<hr>
+
+<a name="schema7"></a>
+
+# 7. Documentación
+
+
+https://unipython.com/como-preparar-datos-de-texto-con-scikit-learn/
